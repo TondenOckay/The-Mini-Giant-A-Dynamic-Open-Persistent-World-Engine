@@ -1,12 +1,13 @@
-# DOWE "The Mini Giant" - Complete System Documentation
+# DOPWE "The Mini Giant" - Complete System Documentation
 ## Version 1.0 (Master Build)
 ## February 11, 2026
 
 ---
 
-## 🎯 WHAT IS DOWE?
+## 🎯 WHAT IS The Mini Giant: Dynamipc Open Persistent World Engine?
 
-Dynamic Open World Engine (DOWE) "The Mini Giant" transforms each area in your NWN module into an **independent mini-server**. Each area:
+
+Dynamipc Open Persistent World Engine (DOPWE) "The Mini Giant" transforms each area in your NWN module into an **independent mini-server**. Each area:
 
 - Processes only when players are present (Zero-Waste)
 - Manages its own player registry (VIP list with slots)
@@ -84,7 +85,7 @@ Edit `area_const_inc.nss`:
 
 ## 📊 PERFORMANCE METRICS
 
-**Traditional System** (480 players):
+**Traditional System** (for a high player base):
 - GetFirstPC() loops: ~500,000 operations/hour
 - Area processing: Always running (wasted CPU on empty areas)
 
