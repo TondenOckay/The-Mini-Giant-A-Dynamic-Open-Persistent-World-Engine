@@ -71,13 +71,13 @@ Dynamipc Open Persistent World Engine (DOPWE) "The Mini Giant" transforms each a
 
 ### **Step 3: Configure**
 Edit `area_const_inc.nss`:
-- Set `DOWE_DEFAULT_MAX_SLOTS` (players per area)
+- Set `DOPWE_DEFAULT_MAX_SLOTS` (players per area)
 - Adjust encounter timing, distances, spawn chances
 - Configure cleanup lifespans
 
 ### **Step 4: Test**
 1. Start module
-2. Enable debug: Set `DOWE_DEBUG` = 1 on module object
+2. Enable debug: Set `DOPWE_DEBUG` = 1 on module object
 3. Enter an area - check for dispatcher messages
 4. Watch chat window for system reports
 
@@ -101,11 +101,11 @@ Edit `area_const_inc.nss`:
 
 ### **Debug Levels**
 Set on module object:
-- `DOWE_DEBUG` - Main toggle (TRUE/FALSE)
-- `DOWE_DEBUG_VERBOSE` - Detailed logging
-- `DOWE_DEBUG_REGISTRY` - Registry operations
-- `DOWE_DEBUG_ENCOUNTERS` - Encounter spawning
-- `DOWE_DEBUG_MUD` - MUD commands
+- `DOPWE_DEBUG` - Main toggle (TRUE/FALSE)
+- `DOPWE_DEBUG_VERBOSE` - Detailed logging
+- `DOPWE_DEBUG_REGISTRY` - Registry operations
+- `DOPWE_DEBUG_ENCOUNTERS` - Encounter spawning
+- `DOPWE_DEBUG_MUD` - MUD commands
 
 ### **Cleanup Lifespans**
 Edit `cleanup_config.2da`:
@@ -121,10 +121,10 @@ PlayerCorpse       600       (60 minutes)
 
 ### **Encounter Tuning**
 In `area_const_inc.nss`:
-- `DOWE_ENC_SPAWN_CHANCE` - 40% default
-- `DOWE_ENC_DIST_CLOSE` - 10m spawn ring
-- `DOWE_ENC_DIST_MEDIUM` - 20m spawn ring
-- `DOWE_ENC_DIST_FAR` - 30m spawn ring
+- `DOPWE_ENC_SPAWN_CHANCE` - 40% default
+- `DOPWE_ENC_DIST_CLOSE` - 10m spawn ring
+- `DOPWE_ENC_DIST_MEDIUM` - 20m spawn ring
+- `DOPWE_ENC_DIST_FAR` - 30m spawn ring
 
 ---
 
@@ -134,14 +134,14 @@ In `area_const_inc.nss`:
 1. Create waypoints with tag format: `LIVENPC_[NAME]_[TYPE]`
    - Type 1 = Fast spawn (before player)
    - Type 2 = Normal spawn (after player)
-2. Enable: Set `DOWE_LIVE_NPC_ENABLED` = 1 on module
+2. Enable: Set `DOPWE_LIVE_NPC_ENABLED` = 1 on module
 3. Enter area - NPCs spawn automatically
 
 ### **Registry Test**
 ```
 // DM Console
 object oArea = GetArea(OBJECT_SELF);
-int nCount = GetLocalInt(oArea, "DOWE_REG_PLAYER_COUNT");
+int nCount = GetLocalInt(oArea, "DOPWE_REG_PLAYER_COUNT");
 SendMessageToPC(OBJECT_SELF, "Players: " + IntToString(nCount));
 ```
 
@@ -211,7 +211,7 @@ SendMessageToPC(OBJECT_SELF, "Players: " + IntToString(nCount));
 
 **Problem**: "Players not registered"
 - Check: OnAreaEnter assigned to area_on_enter
-- Test with: GetLocalInt(oArea, "DOWE_REG_PLAYER_COUNT")
+- Test with: GetLocalInt(oArea, "DOPWE_REG_PLAYER_COUNT")
 
 **Problem**: "Cleanup not working"
 - Check: area_on_drop and area_on_death assigned
