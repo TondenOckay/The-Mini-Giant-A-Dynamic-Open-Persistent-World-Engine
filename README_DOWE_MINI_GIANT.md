@@ -14,7 +14,7 @@ Dynamipc Open Persistent World Engine (DOPWE) "The Mini Giant" transforms each a
 - Handles cleanup, NPCs, and encounters independently
 - Shuts down completely when empty (zero CPU usage)
 
-**Goal**: Support 480+ concurrent players with clean, maintainable code for a single developer.
+**Goal**: Support high concurrent players with clean, maintainable code for a single developer.
 
 ---
 
@@ -89,11 +89,11 @@ Edit `area_const_inc.nss`:
 - GetFirstPC() loops: ~500,000 operations/hour
 - Area processing: Always running (wasted CPU on empty areas)
 
-**DOWE System** (480 players):
+**DOPWE System**:
 - Registry lookups: ~1,800 operations/hour  
 - Area processing: Only when players present (99.64% reduction)
 
-**Result**: Can handle 480+ concurrent players on modest hardware.
+**Result**: Can handle high concurrent players on modest hardware.
 
 ---
 
