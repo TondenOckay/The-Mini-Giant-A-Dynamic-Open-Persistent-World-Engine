@@ -1,4 +1,4 @@
-# DOWE "The Mini Giant" - Platinum Standard v2.0
+# DOPWE "The Mini Giant" - Platinum Standard v2.0
 ## Manifest Architecture Revolution
 ## February 12, 2026
 
@@ -94,13 +94,13 @@ NEW (Platinum):
 ### **Player Count Check**
 ```
 OLD:
-- GetFirstPC() loop through 480 players
+- GetFirstPC() loop through all players on the server
 - Check GetArea() for each
-- ~480 operations
+- ~all players operations
 
 NEW:
 - Read one integer: ManifestGetPlayerCount()
-- ~1 operation (480x faster)
+- ~1 operation (x times faster for each player on the server)
 ```
 
 ### **Encounter Spawning**
@@ -178,8 +178,8 @@ Same as Gold Standard, but with these changes:
 
 1. **All .nss files** must be compiled
 2. **area_manifest_inc.nss** is the new foundation (replaces area_registry_inc)
-3. **SQL Toggle**: Set `DOWE_SQL_USE_EXTERNAL` on module object (0=internal, 1=external)
-4. **Encounter Tuning**: Adjust `DOWE_ENC_PLAYERS_PER_TICK` in area_const_inc
+3. **SQL Toggle**: Set `DOPWE_SQL_USE_EXTERNAL` on module object (0=internal, 1=external)
+4. **Encounter Tuning**: Adjust `DOPWE_ENC_PLAYERS_PER_TICK` in area_const_inc
 
 ---
 
@@ -229,10 +229,10 @@ int nCulled = ManifestCullExpired(oArea);
 
 ## 📈 EXPECTED PERFORMANCE
 
-For a **480-player server** with **50 active areas**:
+For a **very large scale server** with **50 active areas**:
 
 - **Cleanup**: 20x faster than area scanning
-- **Player queries**: 480x faster than GetFirstPC() loops
+- **Player queries**: x faster per player on the server than GetFirstPC() loops
 - **Encounter spawning**: 10x smoother (no spikes)
 - **Empty areas**: 100% zero CPU usage
 
