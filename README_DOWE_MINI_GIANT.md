@@ -250,7 +250,7 @@ SendMessageToPC(OBJECT_SELF, "Players: " + IntToString(nCount));
 
 This is a **Gold Standard 02/2026** architecture designed for:
 - Single developer management
-- 480+ player capacity
+- High player capacity
 - Clean, maintainable code
 - Plug & play modularity
 
