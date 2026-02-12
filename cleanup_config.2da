@@ -1,0 +1,59 @@
+2DA V2.0
+
+                Label              LifespanTicks    
+0               Remains            30               
+1               LootBags           50               
+2               DroppedItems       100              
+3               PlayerCorpse       600              
+
+****
+
+CONFIGURATION NOTES:
+====================
+
+This 2DA defines object lifespan in TICKS (not seconds).
+1 Tick = 6 seconds (standard NWN heartbeat)
+
+LIFESPAN CALCULATIONS:
+- Remains (30 ticks):         30 × 6 = 180 seconds  = 3 minutes
+- LootBags (50 ticks):        50 × 6 = 300 seconds  = 5 minutes
+- DroppedItems (100 ticks):   100 × 6 = 600 seconds = 10 minutes
+- PlayerCorpse (600 ticks):   600 × 6 = 3600 seconds = 60 minutes (1 hour)
+
+CUSTOMIZATION GUIDE:
+====================
+
+To adjust lifespans, modify the LifespanTicks column:
+
+For SHORTER cleanup (faster performance):
+- Remains: 20 ticks (2 minutes)
+- DroppedItems: 50 ticks (5 minutes)
+
+For LONGER persistence (more forgiving):
+- Remains: 50 ticks (5 minutes)
+- DroppedItems: 200 ticks (20 minutes)
+
+For HIGH-TRAFFIC servers:
+- Reduce all values by 30-50% to prevent area bloat
+
+For LOW-POPULATION servers:
+- Increase values by 50-100% for more relaxed cleanup
+
+FORMULA:
+Desired Minutes × 10 = LifespanTicks
+(because 10 ticks = 1 minute at 6-second heartbeat)
+
+Examples:
+- 2.5 minutes = 25 ticks
+- 15 minutes = 150 ticks
+- 2 hours = 1200 ticks
+
+PERFORMANCE IMPACT:
+==================
+
+Lower values = More frequent cleanup = Better performance = Less forgiving
+Higher values = Less frequent cleanup = Worse performance = More forgiving
+
+The default values are balanced for a server with 100-300 concurrent players.
+
+For 480+ player servers, consider reducing DroppedItems to 50-75 ticks.

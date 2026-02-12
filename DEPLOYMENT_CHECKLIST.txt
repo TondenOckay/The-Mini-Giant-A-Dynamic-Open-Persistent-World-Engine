@@ -1,0 +1,58 @@
+DOWE "The Mini Giant" - Deployment Checklist
+============================================
+
+□ STEP 1: Copy Files
+  □ Copy all .nss files to: modules/[yourmodule]/scripts/
+  □ Copy cleanup_config.2da to: modules/[yourmodule]/override/
+
+□ STEP 2: Compile Scripts
+  □ Open NWN Toolset
+  □ Tools → Script Editor → Batch Compile
+  □ Verify no compilation errors
+
+□ STEP 3: Assign Module Events
+  □ Module Properties → Events
+  □ OnModuleLoad = area_on_load
+  □ OnModuleHeartbeat = area_dispatcher
+  □ OnPlayerUnacquireItem = area_on_drop  
+  □ OnCreatureDeath = area_on_death
+
+□ STEP 4: Assign Area Events (ALL AREAS)
+  □ For each area in your module:
+    □ OnAreaEnter = area_on_enter
+    □ OnAreaExit = area_on_exit
+    □ OnAreaHeartbeat = area_heartbeat
+  
+  TIP: Use batch assignment:
+  - Select all areas in area list
+  - Right-click → Properties → Scripts
+  - Set all three events at once
+
+□ STEP 5: Initial Configuration
+  □ Edit area_const_inc.nss if needed:
+    □ DOWE_DEFAULT_MAX_SLOTS (default: 100)
+    □ Encounter spawn chances/distances
+    □ Cleanup lifespans
+  □ Recompile if changed
+
+□ STEP 6: Test Deployment
+  □ Start module
+  □ Check server log for:
+    "DOWE 'The Mini Giant' v1.0 initialized"
+  □ Enable debug via DM console:
+    SetLocalInt(GetModule(), "DOWE_DEBUG", 1)
+  □ Enter an area
+  □ Verify dispatcher message every 6 seconds
+  □ Check player count:
+    GetLocalInt(GetArea(OBJECT_SELF), "DOWE_REG_PLAYER_COUNT")
+
+□ STEP 7: Optional Systems
+  □ Enable Live NPCs for testing:
+    SetLocalInt(GetModule(), "DOWE_LIVE_NPC_ENABLED", 1)
+  □ Create test waypoints: LIVENPC_TestNPC_1 or _2
+
+□ STEP 8: Performance Tuning
+  □ Monitor with debug enabled for first week
+  □ Adjust cleanup lifespans in 2DA as needed
+  □ Scale encounter spawn chances based on load
+
