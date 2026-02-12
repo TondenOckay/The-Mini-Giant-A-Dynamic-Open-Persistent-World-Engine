@@ -1,110 +1,104 @@
 /* ============================================================================
     PROJECT: Dynamic Open World Engine (DOWE) "The Mini Giant"
-    VERSION: 1.0 (Master Build)
-    DATE: February 11, 2026
-    PLATFORM: Neverwinter Nights: Enhanced Edition (NWN:EE)
+    VERSION: 2.0 (Platinum Standard)
+    DATE: February 12, 2026
     Script Name: area_janitor
-    Triggered By: area_on_exit
     
-    PILLARS:
-    1. Independent Mini-Servers Architecture
-    2. Phase-Staggered Performance Optimization
-    3. Total Resource Management (Zero-Waste)
-    
-    DESCRIPTION:
-    Player exit cleanup. Saves progress to SQL, despawns owned encounters,
-    removes area from registry, and shuts down mini-server if empty.
-    
-    ZERO-WASTE PRINCIPLE:
-    When the last player exits, this script ensures the area goes completely
-    dormant, consuming ZERO resources until the next player enters.
+    TRUE ZERO-WASTE:
+    - Saves player data (staggered if multiple players)
+    - Transfers or despawns owned encounters
+    - Clears AOEs, VFX, summons when area empties
+    - Complete manifest shutdown on last player exit
    ============================================================================
 */
 
-#include "area_registry_inc"
+#include "area_manifest_inc"
 #include "area_sql_inc"
 
 void main()
 {
-    object oPC = OBJECT_SELF;  // PC is OBJECT_SELF when called from OnExit
+    object oPC = OBJECT_SELF;
     object oArea = GetArea(oPC);
     
     if (!GetIsPC(oPC)) return;
     
-    string sPlayerName = GetName(oPC);
-    int nSlot = GetLocalInt(oPC, DOWE_PLAYER_SLOT);
+    int nPlayerSlot = GetLocalInt(oPC, "MANIFEST_SLOT");
     
-    // Save player data to SQL
+    // Save player data
     SQLSavePlayerData(oPC);
     
-    // Despawn encounters owned by this player
-    object oCreature = GetFirstObjectInArea(oArea, OBJECT_TYPE_CREATURE);
+    // Handle encounters owned by this player
+    object oCreature = ManifestGetFirst(oArea, MANIFEST_FLAG_CREATURE);
+    int nTransferred = 0;
     int nDespawned = 0;
     
     while (GetIsObjectValid(oCreature))
     {
-        int nOwnerSlot = GetLocalInt(oCreature, DOWE_ENC_OWNER_SLOT);
+        string sPrefix = "MANIFEST_SLOT_" + IntToString(GetLocalInt(oCreature, "MANIFEST_SLOT"));
+        int nOwnerSlot = GetLocalInt(oArea, sPrefix + "_OWNER");
         
-        if (nOwnerSlot == nSlot)
+        if (nOwnerSlot == nPlayerSlot)
         {
-            // Check if we can transfer ownership to another player
-            object oNearestPC = OBJECT_INVALID;
+            // Try to transfer to nearby player
+            object oNearestPC = ManifestGetFirst(oArea, MANIFEST_FLAG_PLAYER);
+            object oTransferTarget = OBJECT_INVALID;
             float fNearestDist = 999.0;
             
-            object oPC2 = RegistryGetFirstPlayer(oArea);
-            while (GetIsObjectValid(oPC2))
+            while (GetIsObjectValid(oNearestPC))
             {
-                if (oPC2 != oPC)  // Don't transfer to exiting player
+                if (oNearestPC != oPC)
                 {
-                    float fDist = GetDistanceBetween(oCreature, oPC2);
-                    if (fDist < DOWE_ENC_TRANSFER_RANGE && fDist < fNearestDist)
+                    float fDist = GetDistanceBetween(oCreature, oNearestPC);
+                    if (fDist < 30.0 && fDist < fNearestDist)
                     {
-                        oNearestPC = oPC2;
+                        oTransferTarget = oNearestPC;
                         fNearestDist = fDist;
                     }
                 }
-                oPC2 = RegistryGetNextPlayer(oArea);
+                oNearestPC = ManifestGetNext(oArea);
             }
             
-            if (GetIsObjectValid(oNearestPC))
+            if (GetIsObjectValid(oTransferTarget))
             {
                 // Transfer ownership
-                int nNewSlot = GetLocalInt(oNearestPC, DOWE_PLAYER_SLOT);
-                SetLocalInt(oCreature, DOWE_ENC_OWNER_SLOT, nNewSlot);
-                
-                DebugReport(oArea, "Encounter transferred from " + sPlayerName + 
-                           " to " + GetName(oNearestPC));
+                int nNewSlot = GetLocalInt(oTransferTarget, "MANIFEST_SLOT");
+                SetLocalInt(oArea, sPrefix + "_OWNER", nNewSlot);
+                nTransferred++;
             }
             else
             {
-                // No one nearby, despawn
+                // Despawn
                 DestroyObject(oCreature, 0.5);
+                ManifestRemove(oArea, oCreature);
                 nDespawned++;
             }
         }
         
-        oCreature = GetNextObjectInArea(oArea, OBJECT_TYPE_CREATURE);
+        oCreature = ManifestGetNext(oArea);
     }
     
-    if (nDespawned > 0)
-    {
-        DebugReport(oArea, "Janitor despawned " + IntToString(nDespawned) + 
-                   " creatures for exiting player " + sPlayerName);
-    }
-    
-    // Remove from registry
-    RegistryRemovePlayer(oPC, oArea);
+    // Remove player from manifest
+    ManifestRemove(oArea, oPC);
     
     // Check if area is now empty
-    int nRemainingPlayers = GetLocalInt(oArea, DOWE_REG_PLAYER_COUNT);
+    int nRemainingPlayers = ManifestGetPlayerCount(oArea);
     
     if (nRemainingPlayers == 0)
     {
-        DebugReport(oArea, "MINI-SERVER SHUTDOWN: No players remaining. " +
-                   "Area entering Zero-Waste dormant mode.");
+        // TRUE ZERO-WASTE: Complete shutdown
+        ManifestShutdownArea(oArea);
         
-        // Optional: Cleanup all remaining area objects for true "shutdown"
-        // This is aggressive - only use if you want total reset on empty
-        // ExecuteScript("area_cleanup", oArea);
+        if (GetDoweDebug())
+        {
+            SendMessageToAllDMs("JANITOR: Area " + GetTag(oArea) + 
+                               " entered Zero-Waste dormancy (complete shutdown)");
+        }
+    }
+    else if (GetDoweDebug())
+    {
+        SendMessageToAllDMs("JANITOR: " + GetName(oPC) + " exited. " +
+                           "Transferred: " + IntToString(nTransferred) + 
+                           " | Despawned: " + IntToString(nDespawned) +
+                           " | Remaining players: " + IntToString(nRemainingPlayers));
     }
 }

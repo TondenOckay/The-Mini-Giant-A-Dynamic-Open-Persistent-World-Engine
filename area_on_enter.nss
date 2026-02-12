@@ -1,23 +1,16 @@
 /* ============================================================================
     PROJECT: Dynamic Open World Engine (DOWE) "The Mini Giant"
-    VERSION: 1.0 (Master Build)
-    DATE: February 11, 2026
-    PLATFORM: Neverwinter Nights: Enhanced Edition (NWN:EE)
+    VERSION: 2.0 (Platinum Standard)
+    DATE: February 12, 2026
     Script Name: area_on_enter
-    Event: OnAreaEnter
     
-    PILLARS:
-    1. Independent Mini-Servers Architecture
-    2. Phase-Staggered Performance Optimization
-    3. Total Resource Management (Zero-Waste)
-    
-    DESCRIPTION:
-    Handles player entry into areas. Registers player in VIP list,
-    spawns fast NPCs if enabled, and wakes up the mini-server.
+    REVOLUTION:
+    Old: Scan entire area for Type 1 NPCs
+    New: NPCs are already in manifest, O(1) lookup
    ============================================================================
 */
 
-#include "area_registry_inc"
+#include "area_manifest_inc"
 
 void main()
 {
@@ -26,12 +19,9 @@ void main()
     
     if (!GetIsPC(oPC)) return;
     
-    // Register player in VIP list
-    int nSlot = RegistryAddPlayer(oPC, oArea);
+    // Add to manifest (self-registering)
+    ManifestAddPlayer(oPC, oArea);
     
-    // Spawn Type 1 (fast) NPCs if enabled
-    if (GetLocalInt(GetModule(), DOWE_LIVE_NPC_ENABLED))
-    {
-        ExecuteScript("live_npc_spawn_fast", oArea);
-    }
+    // Type 1 NPCs spawn happens in live_npc_system via manifest lookup
+    // NO AREA SCANNING
 }

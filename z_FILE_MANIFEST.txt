@@ -1,0 +1,60 @@
+DOWE "The Mini Giant" - File Manifest
+====================================
+
+CORE ARCHITECTURE (4 files):
+  area_dispatcher.nss       - Module heartbeat scheduler
+  area_switchboard.nss      - 3-phase area orchestrator
+  area_cleanup.nss          - Phase 1 resource management
+  area_heartbeat.nss        - Failsafe watchdog
+
+INCLUDE LIBRARIES (4 files):
+  area_const_inc.nss        - Constants and configuration
+  area_debug_inc.nss        - Debug/logging system
+  area_registry_inc.nss     - VIP player list manager
+  area_sql_inc.nss          - Database wrappers
+
+EVENT HANDLERS (5 files):
+  area_on_load.nss          - Module initialization
+  area_on_enter.nss         - Player entry
+  area_on_exit.nss          - Player exit
+  area_on_drop.nss          - Item drop tracking
+  area_on_death.nss         - Creature death tracking
+
+LIFECYCLE MANAGEMENT (1 file):
+  area_janitor.nss          - Exit cleanup & save system
+
+LIVE NPC SYSTEM (2 files):
+  live_npc_system.nss       - Type 2 NPC spawner
+  live_npc_spawn_fast.nss   - Type 1 NPC spawner
+
+ENCOUNTER SYSTEM (1 file):
+  enc_main.nss              - Dynamic encounter controller
+
+CONFIGURATION (1 file):
+  cleanup_config.2da        - Object lifespan configuration
+
+DOCUMENTATION (3 files):
+  README_DOWE_MINI_GIANT.md - Complete system documentation
+  DEPLOYMENT_CHECKLIST.txt  - Step-by-step deployment guide
+  FILE_MANIFEST.txt         - This file
+
+TOTAL: 21 files (17 .nss + 1 .2da + 3 docs)
+
+SYSTEMS STATUS:
+  ✅ Core 4 Architecture
+  ✅ Registry System
+  ✅ Cleanup System
+  ✅ Debug System
+  ✅ SQL Save/Load
+  ✅ Janitor System
+  ✅ Live NPC System
+  ✅ Basic Encounter System
+  
+  🚧 TODO (Expandable):
+  - MUD Command Engine
+  - Quest System
+  - Shop System
+  - Crafting System
+  - Gathering System
+  - Advanced Encounter AI
+

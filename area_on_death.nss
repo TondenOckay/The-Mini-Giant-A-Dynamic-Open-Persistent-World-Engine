@@ -1,27 +1,29 @@
 /* ============================================================================
     PROJECT: Dynamic Open World Engine (DOWE) "The Mini Giant"
-    VERSION: 1.0 (Master Build)
-    DATE: February 11, 2026
-    PLATFORM: Neverwinter Nights: Enhanced Edition (NWN:EE)
+    VERSION: 2.0 (Platinum Standard)
+    DATE: February 12, 2026
     Script Name: area_on_death
-    Event: OnCreatureDeath (Module)
     
-    DESCRIPTION:
-    Tags corpses with timestamp and marks player corpses.
+    SELF-REGISTRATION:
+    Corpses add themselves to manifest with appropriate expiration.
    ============================================================================
 */
 
+#include "area_manifest_inc"
 #include "area_const_inc"
 
 void main()
 {
     object oCorpse = OBJECT_SELF;
-    int nCurrentTick = GetDoweTick();
+    object oArea = GetArea(oCorpse);
     
-    SetLocalInt(oCorpse, DOWE_DEATH_TICK, nCurrentTick);
+    int bIsPlayerCorpse = GetIsPC(oCorpse);
     
-    if (GetIsPC(oCorpse))
-    {
-        SetLocalInt(oCorpse, DOWE_PLAYER_CORPSE, TRUE);
-    }
+    // Get appropriate lifespan
+    int nLifespan = bIsPlayerCorpse ? 
+                   GetLocalInt(GetModule(), DOWE_CFG_PLAYER_CORPSE_LIFE) :
+                   GetLocalInt(GetModule(), DOWE_CFG_REMAINS_LIFE);
+    
+    // Self-register to manifest
+    ManifestAdd(oArea, oCorpse, MANIFEST_FLAG_CORPSE, nLifespan);
 }

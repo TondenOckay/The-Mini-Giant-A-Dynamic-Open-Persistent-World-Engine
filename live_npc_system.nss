@@ -1,70 +1,52 @@
 /* ============================================================================
     PROJECT: Dynamic Open World Engine (DOWE) "The Mini Giant"
-    VERSION: 1.0 (Master Build)
-    DATE: February 11, 2026
-    PLATFORM: Neverwinter Nights: Enhanced Edition (NWN:EE)
+    VERSION: 2.0 (Platinum Standard)
+    DATE: February 12, 2026
     Script Name: live_npc_system
-    Triggered By: area_switchboard (Phase 2)
     
-    DESCRIPTION:
-    Spawns Type 2 (normal) test NPCs from waypoints.
-    Type 1 (fast) NPCs are spawned in area_on_enter.
-    
-    WAYPOINT NAMING:
-    - LIVENPC_[NAME]_1 = Fast spawn (before player enters)
-    - LIVENPC_[NAME]_2 = Normal spawn (after player enters)
+    NO AREA SCANNING:
+    NPCs self-register to manifest on spawn. We just check manifest for
+    Type 2 waypoints and spawn if not already present.
    ============================================================================
 */
 
+#include "area_manifest_inc"
 #include "area_const_inc"
 
 void main()
 {
     object oArea = OBJECT_SELF;
     
-    // Check if system is enabled
     if (!GetLocalInt(GetModule(), DOWE_LIVE_NPC_ENABLED)) return;
     
-    // Find all Type 2 waypoints and spawn NPCs
-    object oWP = GetFirstObjectInArea(oArea, OBJECT_TYPE_WAYPOINT);
+    // Look at waypoint manifest (these were added on area load)
+    object oWP = ManifestGetFirst(oArea, MANIFEST_FLAG_WAYPOINT_NPC);
     int nSpawned = 0;
     
     while (GetIsObjectValid(oWP))
     {
         string sTag = GetTag(oWP);
         
-        if (GetStringLeft(sTag, 8) == "LIVENPC_")
+        // Check if this is Type 2 (normal spawn)
+        if (GetStringRight(sTag, 1) == "2")
         {
-            // Extract spawn type (last character)
-            string sType = GetStringRight(sTag, 1);
-            
-            if (sType == "2")  // Type 2 = Normal spawn
+            // Check if NPC already spawned
+            if (!GetLocalInt(oWP, "NPC_SPAWNED"))
             {
-                // Check if NPC already spawned
-                if (!GetLocalInt(oWP, "NPC_SPAWNED"))
-                {
-                    // Extract NPC name (between LIVENPC_ and _2)
-                    string sNPCName = GetSubString(sTag, 8, GetStringLength(sTag) - 10);
-                    
-                    // TODO: Spawn NPC from blueprint
-                    // object oNPC = CreateObject(OBJECT_TYPE_CREATURE, "blueprint_" + sNPCName, 
-                    //                            GetLocation(oWP));
-                    
-                    // Register NPC as PC for testing
-                    // RegistryAddPlayer(oNPC, oArea);
-                    
-                    SetLocalInt(oWP, "NPC_SPAWNED", TRUE);
-                    nSpawned++;
-                }
+                // TODO: Spawn NPC from blueprint
+                // object oNPC = CreateObject(OBJECT_TYPE_CREATURE, "blueprint", GetLocation(oWP));
+                // ManifestAdd(oArea, oNPC, MANIFEST_FLAG_LIVE_NPC);
+                
+                SetLocalInt(oWP, "NPC_SPAWNED", TRUE);
+                nSpawned++;
             }
         }
         
-        oWP = GetNextObjectInArea(oArea, OBJECT_TYPE_WAYPOINT);
+        oWP = ManifestGetNext(oArea);
     }
     
-    if (nSpawned > 0)
+    if (nSpawned > 0 && GetDoweDebug())
     {
-        DebugReport(oArea, "Live NPC System: Spawned " + IntToString(nSpawned) + 
-                   " Type 2 (normal) NPCs");
+        SendMessageToAllDMs("LIVE_NPC: Spawned " + IntToString(nSpawned) + " Type 2 NPCs");
     }
 }
